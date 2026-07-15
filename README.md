@@ -2,6 +2,8 @@
 
 A comprehensive, production-grade ROS2 Humble workspace implementing multiple autonomous mobile robot (AMR) control systems, Gazebo simulations, and safety-critical **Behavior Tree** & **State Machine** architectures.
 
+This workspace organizes various tutorials, simulators, and autonomy nodes into a clean, modular structure.
+
 ---
 
 ## 📦 Packages Directory
@@ -12,7 +14,6 @@ This workspace contains the following ROS2 packages under the `src/` directory:
 The primary simulation and autonomy package for the **Nebula Forklift AMR**.
 *   **Autonomy Behavior Tree**: Implemented with `py_trees` to monitor battery charge, run automated docking/charging states, and execute emergency halts (E-Stop).
 *   **Physics Simulation**: Physics-calibrated differential AMR with a functional prismatic forklift fork mechanism (`lift_joint`) and parameterized passive rollers.
-*   **Interactive Simulation**: Supports manual topic publishing to trigger E-Stop or low battery events.
 
 ### 2. [Robot Behavior Tree Executor (robot_bt)](./src/robot_bt)
 A clean, modular executor package designed for general AMR tasks.
@@ -36,39 +37,22 @@ A collection of 101-level examples designed to teach the fundamentals of:
 
 ---
 
-## 📐 Decision Making Flow (AMR Forklift Example)
+## 📂 Repository Layout
 
-Below is the behavior tree logic executing inside the `amr_forklift` package to coordinate safety, power states, and patrol missions:
-
-```mermaid
-graph TD
-    %% Tree Nodes
-    Root["Selector: AMR_Main_Decision_Tree"]
-    EmergencySeq["Sequence: Safety_Emergency_Sequence"]
-    CheckSafety["CheckSafety<br/>(Reads Blackboard safety_hazard)"]
-    EStopAction["EStopAction<br/>(Publishes cmd_vel 0)"]
-
-    ChargeSeq["Sequence: Battery_Charging_Sequence"]
-    CheckBattery["CheckBattery<br/>(Reads Blackboard battery_voltage)"]
-    ChargeAction["BatteryChargingAction<br/>(Dock & increment voltage)"]
-
-    PatrolAction["PatrolAction<br/>(Patrol drive / turn pattern)"]
-
-    %% Connections
-    Root --> EmergencySeq
-    EmergencySeq --> CheckSafety
-    EmergencySeq --> EStopAction
-
-    Root --> ChargeSeq
-    ChargeSeq --> CheckBattery
-    ChargeSeq --> ChargeAction
-
-    Root --> PatrolAction
+```
+pytrees/
+├── README.md              # Workspace-level documentation (this file)
+└── src/
+    ├── amr_forklift/      # Nebula Forklift AMR simulation & py_trees autonomy
+    ├── robot_bt/          # ROS2 BT executor and action servers
+    ├── turtle_tasks/      # Nav2 tuning and waypoint navigation
+    ├── turtlebot_autonomy/# SMACH state machine robot autonomy
+    └── SimpleExamplesForBehaviorTree/ # BT and SMACH 101 tutorials
 ```
 
 ---
 
-## ⚙️ Compilation & Quick Start
+## ⚙️ Compilation & Setup
 
 Ensure ROS2 Humble is sourced on your Ubuntu terminal, then clone and compile the workspace:
 
@@ -83,12 +67,12 @@ colcon build --symlink-install
 source install/setup.bash
 ```
 
-### Run Forklift AMR Simulation:
-```bash
-# Terminal 1: Launch Gazebo and spawn Nebula AMR
-ros2 launch amr_forklift gazebo.launch.py
+---
 
-# Terminal 2: Start Behavior Tree decision node
-ros2 launch amr_forklift behaviors.launch.py
-```
-*For detailed usage and testing guides of other packages, navigate to their individual directories.*
+## 📖 Running the Packages
+Each package contains its own dedicated launch files, configuration parameters, and detailed documentation. 
+
+For setup and execution instructions of a specific package, please navigate to its respective directory:
+- To run the Forklift AMR simulation and its Behavior Tree, see [amr_forklift README](./src/amr_forklift/README.md).
+- To run the C++ Behavior Tree tutorials, see [SimpleExamplesForBehaviorTree README](./src/SimpleExamplesForBehaviorTree/README.md).
+- To run the Nav2 waypoint follow tasks, see [turtle_tasks README](./src/turtle_tasks/README.md).
